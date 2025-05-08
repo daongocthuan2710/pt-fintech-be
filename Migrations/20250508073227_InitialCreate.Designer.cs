@@ -9,10 +9,10 @@ using TaskManagement_BE.data;
 
 #nullable disable
 
-namespace TaskManagementBE.Migrations
+namespace TaskManagement_BE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250508022233_InitialCreate")]
+    [Migration("20250508073227_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace TaskManagementBE.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -92,7 +92,7 @@ namespace TaskManagementBE.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(36)");
 
                     b.HasKey("Id");
 
@@ -114,7 +114,7 @@ namespace TaskManagementBE.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(36)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -126,7 +126,7 @@ namespace TaskManagementBE.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("text");
@@ -141,7 +141,7 @@ namespace TaskManagementBE.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("text");
@@ -188,7 +188,7 @@ namespace TaskManagementBE.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(36)");
 
                     b.HasKey("Id");
 
@@ -200,7 +200,8 @@ namespace TaskManagementBE.Migrations
             modelBuilder.Entity("TaskManagement_BE.models.User", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("text");
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
@@ -210,6 +211,7 @@ namespace TaskManagementBE.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
@@ -231,6 +233,7 @@ namespace TaskManagementBE.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
@@ -239,6 +242,13 @@ namespace TaskManagementBE.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -246,6 +256,7 @@ namespace TaskManagementBE.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 

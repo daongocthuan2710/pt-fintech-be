@@ -14,6 +14,13 @@ namespace TaskManagement_BE.data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<User>().Property(u => u.RefreshToken).HasMaxLength(512);
+            builder.Entity<User>().Property(u => u.RefreshTokenExpiryTime);
+
+            builder.Entity<User>()
+               .Property(u => u.Id)
+               .HasMaxLength(36)
+               .ValueGeneratedNever();
 
             builder.Entity<TaskItem>()
                 .HasOne(t => t.User)

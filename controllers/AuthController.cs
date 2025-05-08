@@ -4,6 +4,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
+
 using TaskManagement_BE.models;
 
 namespace TaskManagement_BE.controllers
@@ -22,7 +26,7 @@ namespace TaskManagement_BE.controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] Login model)
         {
             if (model == null || string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
                 return BadRequest("Username and Password are required.");
@@ -35,45 +39,82 @@ namespace TaskManagement_BE.controllers
                 return Unauthorized("Invalid username or password.");
 
             // Generate JWT Token
-            var token = await GenerateTokenAsync(user);
+            var token = await GenerateAccessTokenAsync(user);
             return Ok(new { AccessToken = token });
         }
 
-        // Generate JWT Token method
-        private async Task<string> GenerateTokenAsync(User user)
+        private async Task<string> GenerateAccessTokenAsync(User user)
         {
-            // Lấy danh sách vai trò của người dùng
             var roles = await _userManager.GetRolesAsync(user);
 
-            // Danh sách claims cho token
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email ?? "")
-            };
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? ""),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email ?? "")
+    };
 
-            // Thêm các role vào claim (nếu có)
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            // Lấy khóa bí mật từ cấu hình
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"]));
+            string secretKey = _config["JwtSettings:SecretKey"];
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                throw new Exception("JWT SecretKey is not configured. Please check appsettings.json.");
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Tạo JWT Token
             var token = new JwtSecurityToken(
                 issuer: _config["JwtSettings:Issuer"],
                 audience: _config["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(60), // Token hết hạn sau 60 phút
+                expires: DateTime.UtcNow.AddMinutes(60),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+        {
+            if (string.IsNullOrEmpty(refreshToken))
+                return BadRequest("Invalid Refresh Token.");
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                return Unauthorized("Invalid or expired refresh token.");
+
+            var newAccessToken = await GenerateAccessTokenAsync(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            // Cập nhật Refresh Token mới cho User
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            });
+        }
+
     }
+
 }
