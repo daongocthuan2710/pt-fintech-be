@@ -21,6 +21,17 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Management BE v1");
+        options.RoutePrefix = string.Empty;
+    });
+}
+
 // Seed data
 using (var scope = app.Services.CreateScope())
 {
