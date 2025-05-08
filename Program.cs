@@ -10,10 +10,22 @@ using TaskManagement_BE.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Config CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 // Configure Services
 ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
+app.UseCors("AllowAllOrigins");
 
 // Configure Middlewares
 ConfigureMiddlewares(app);

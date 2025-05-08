@@ -63,13 +63,41 @@ namespace TaskManagement_BE.controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserDto registerDto)
         {
-            var result = await _authService.RegisterAsync(registerDto);
-            if (result.Succeeded)
-                return Ok("User registered successfully.");
+            try
+            {
+                var result = await _authService.RegisterAsync(registerDto);
+                if (result.Succeeded)
+                {
+                    return Ok(new
+                    {
+                        code = 201,
+                        status = true,
+                        message = "User registered successfully."
+                    });
+                }
 
-            var errors = result.Errors.Select(e => e.Description);
-            return BadRequest(new { Errors = errors });
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                return BadRequest(new
+                {
+                    code = 400,
+                    status = false,
+                    message = "User registration failed.",
+                    errors = errors
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    code = 500,
+                    status = false,
+                    message = "An unexpected error occurred.",
+                    error = ex.Message
+                });
+            }
         }
+
 
         // [HttpPost("refresh")]
         // public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
