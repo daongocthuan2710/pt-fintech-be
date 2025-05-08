@@ -7,6 +7,7 @@ using TaskManagement_BE.models;
 using TaskManagement_BE.DTOs;
 using TaskManagement_BE.Repositories;
 using Microsoft.AspNetCore.Identity;
+using TaskManagement_BE.Constants;
 
 namespace TaskManagement_BE.Services
 {
@@ -53,7 +54,7 @@ namespace TaskManagement_BE.Services
                 EmailConfirmed = true
             };
 
-            return await _userRepository.CreateUserAsync(user, registerDto.Password);
+            return await _userRepository.CreateUserAsync(user, registerDto.Password, ROLE.User);
         }
 
         public async Task<string> LoginAsync(string username, string password)

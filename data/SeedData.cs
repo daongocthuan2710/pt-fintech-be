@@ -5,6 +5,7 @@ using TaskManagement_BE.data;
 using TaskManagement_BE.models;
 using TaskManagement_BE.utils;
 using TaskManagement_BE.Repositories;
+using TaskManagement_BE.Constants;
 
 namespace TaskManagement_BE.data
 {
@@ -30,26 +31,13 @@ namespace TaskManagement_BE.data
 
         private static async Task SeedRolesAsync()
         {
-            var roles = new[] { "admin", "user" };
+            var roles = new[] { ROLE.Admin, ROLE.User };
             foreach (var role in roles)
             {
                 var isExisted = await _userRepository.RoleExistsAsync(role);
-                Console.WriteLine($"✅ Debug: isExisted is {isExisted}");
                 if (!isExisted)
                 {
                     var result = await _userRepository.CreateRoleAsync(role);
-                    // if (result.Succeeded)
-                    // {
-                    //     Console.WriteLine($"Role {role} created successfully.");
-                    // }
-                    // else
-                    // {
-                    //     Console.WriteLine($"Failed to create role {role}. Errors:");
-                    //     foreach (var error in result.Errors)
-                    //     {
-                    //         Console.WriteLine($" - {error.Code}: {error.Description}");
-                    //     }
-                    // }
                 }
             }
         }
@@ -59,9 +47,9 @@ namespace TaskManagement_BE.data
             string adminUserName = "admin";
             string adminPassword = "Admin@123";
             var admin = await _userRepository.GetUserByUsernameAsync(adminUserName);
-            Console.WriteLine("✅ Debug: admin");
-            var jsonAdmin = JsonSerializer.Serialize(admin, new JsonSerializerOptions { WriteIndented = true });
-            Console.WriteLine(jsonAdmin);
+            // Console.WriteLine("✅ Debug: admin");
+            // var jsonAdmin = JsonSerializer.Serialize(admin, new JsonSerializerOptions { WriteIndented = true });
+            // Console.WriteLine(jsonAdmin);
             if (admin == null)
             {
                 admin = new User
@@ -70,7 +58,7 @@ namespace TaskManagement_BE.data
                     Email = "admin@example.com",
                     EmailConfirmed = true
                 };
-                var result = await _userRepository.CreateUserAsync(admin, adminPassword);
+                var result = await _userRepository.CreateUserAsync(admin, adminPassword, ROLE.Admin);
                 if (result.Succeeded)
                 {
                     Console.WriteLine($"Admin created successfully.");
@@ -83,11 +71,6 @@ namespace TaskManagement_BE.data
                         Console.WriteLine($" - {error.Code}: {error.Description}");
                     }
                 }
-
-                var adminInfo = await _userRepository.GetUserByUsernameAsync(adminUserName);
-                Console.WriteLine("✅ Debug: adminInfo");
-                var jsonAdminInfo = JsonSerializer.Serialize(adminInfo, new JsonSerializerOptions { WriteIndented = true });
-                Console.WriteLine(adminInfo);
                 // await _userRepository.AddUserToRoleAsync(admin, "admin");
             }
         }
@@ -111,7 +94,7 @@ namespace TaskManagement_BE.data
                         EmailConfirmed = true
                     };
 
-                    var result = await _userRepository.CreateUserAsync(user, "User@123");
+                    var result = await _userRepository.CreateUserAsync(user, "User@123", ROLE.User);
                     if (result.Succeeded)
                     {
                         Console.WriteLine($"User {userName} created successfully.");
@@ -127,7 +110,7 @@ namespace TaskManagement_BE.data
                     }
                 }
 
-                await _userRepository.AddUserToRoleAsync(user, "user");
+                await _userRepository.AddUserToRoleAsync(user, ROLE.User);
                 await SeedTasksForUserAsync(user);
             }
         }
@@ -152,14 +135,6 @@ namespace TaskManagement_BE.data
                     UserId = user.Id
                 });
             }
-
-            Console.WriteLine("✅ Debug: User");
-            string jsonUser = JsonSerializer.Serialize(user, new JsonSerializerOptions { WriteIndented = true });
-            Console.WriteLine(jsonUser);
-            Console.WriteLine("✅ Debug: Tasks");
-            string jsonTasks = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
-            Console.WriteLine(jsonTasks);
-
             await _context.Tasks.AddRangeAsync(tasks);
             await _context.SaveChangesAsync();
         }
