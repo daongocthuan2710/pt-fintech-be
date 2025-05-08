@@ -45,6 +45,7 @@
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/Task-Management-BE.csproj.CoreCompileInputs.cache
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/Task-Management-BE.MvcApplicationPartsAssemblyInfo.cs
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/Task-Management-BE.MvcApplicationPartsAssemblyInfo.cache
+/Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/Task-Management-BE.sourcelink.json
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/staticwebassets.build.json
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/staticwebassets.development.json
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/staticwebassets/msbuild.Task-Management-BE.Microsoft.AspNetCore.StaticWebAssets.props

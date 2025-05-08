@@ -5,18 +5,21 @@ using TaskManagement_BE.models;
 
 namespace TaskManagement_BE.data
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser>
+    public class AppDbContext : IdentityDbContext<User>
     {
-        public DbSet<TaskItem> Tasks { get; set; }
-
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+        public DbSet<TaskItem> Tasks { get; set; }
 
-            // Đảm bảo rằng bảng TaskItem có Primary Key
-            modelBuilder.Entity<TaskItem>().HasKey(t => t.Id);
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<TaskItem>()
+                .HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
