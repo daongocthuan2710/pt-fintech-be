@@ -31,9 +31,9 @@ namespace TaskManagement_BE.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
                     RefreshToken = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),

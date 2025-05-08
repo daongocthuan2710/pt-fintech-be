@@ -9,9 +9,11 @@ namespace TaskManagement_BE.models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string Id { get; set; }
-        public string UserName { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public override string UserName { get; set; } = string.Empty;
         public string Email { get; set; }
-        public string PasswordHash { get; set; }
+        public string? PasswordHash { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
     }

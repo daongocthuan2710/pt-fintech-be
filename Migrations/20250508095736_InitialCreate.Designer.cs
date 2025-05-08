@@ -12,7 +12,7 @@ using TaskManagement_BE.data;
 namespace TaskManagement_BE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250508073227_InitialCreate")]
+    [Migration("20250508095736_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -233,7 +233,6 @@ namespace TaskManagement_BE.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
@@ -256,7 +255,6 @@ namespace TaskManagement_BE.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 

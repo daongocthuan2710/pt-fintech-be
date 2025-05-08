@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using TaskManagement_BE.models;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement_BE.data;
+using TaskManagement_BE.utils;
+using System.Text.Json;
 
 namespace TaskManagement_BE.Repositories
 {
+    private readonly ILogger<AuthService> _logger;
     public interface IUserRepository
     {
         Task<User?> GetUserByUsernameAsync(string username);
@@ -37,6 +40,13 @@ namespace TaskManagement_BE.Repositories
 
         public async Task<IdentityResult> CreateUserAsync(User user, string password)
         {
+            user.Id = GuidUtil.GenerateGuid();
+            string jsonUser = JsonSerializer.Serialize(user, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            _logger.LogInformation("Debug: User - {User}", jsonUser);
             return await _userManager.CreateAsync(user, password);
         }
 
