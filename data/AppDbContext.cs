@@ -14,19 +14,31 @@ namespace TaskManagement_BE.data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<User>().Property(u => u.RefreshToken).HasMaxLength(512);
-            builder.Entity<User>().Property(u => u.RefreshTokenExpiryTime);
 
             builder.Entity<User>()
-               .Property(u => u.Id)
-               .HasMaxLength(36)
-               .ValueGeneratedNever();
+                .Property(u => u.PasswordHash)
+                .HasMaxLength(500)
+                .IsRequired(false);
 
-            builder.Entity<TaskItem>()
-                .HasOne(t => t.User)
-                .WithMany()
-                .HasForeignKey(t => t.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<IdentityRole>()
+                .Property(r => r.Name)
+                .HasMaxLength(256)
+                .IsRequired();
+
+            builder.Entity<IdentityUserRole<string>>()
+                .HasKey(r => new { r.UserId, r.RoleId });
+
+            builder.Entity<User>()
+                .HasMany<IdentityUserRole<string>>()
+                .WithOne()
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+
+            builder.Entity<IdentityRole>()
+                .HasMany<IdentityUserRole<string>>()
+                .WithOne()
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
         }
     }
 }

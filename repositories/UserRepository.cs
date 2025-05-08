@@ -14,7 +14,7 @@ namespace TaskManagement_BE.Repositories
         Task<User?> GetUserByEmailAsync(string email);
         Task<IdentityResult> CreateUserAsync(User user, string password, string? role);
         Task UpdateUserAsync(User user);
-        Task<bool> ValidatePasswordAsync(User user, string password);
+        Task<bool> ValidatePasswordAsync(string userName, string password);
         Task<bool> AddUserToRoleAsync(User user, string roleName);
         Task<bool> RoleExistsAsync(string roleName);
         Task<IdentityRole> CreateRoleAsync(string roleName);
@@ -28,11 +28,17 @@ namespace TaskManagement_BE.Repositories
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly AppDbContext _context;
 
-        public UserRepository(UserManager<User> userManager, AppDbContext context, RoleManager<IdentityRole> roleManager)
+        private readonly SignInManager<User> _signInManager;
+
+        private readonly PasswordHasher<User> _passwordHasher = new();
+
+        public UserRepository(UserManager<User> userManager, AppDbContext context, RoleManager<IdentityRole> roleManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _context = context;
             _roleManager = roleManager;
+            _signInManager = signInManager;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username)
@@ -52,6 +58,12 @@ namespace TaskManagement_BE.Repositories
                 try
                 {
                     user.Id = GuidUtil.GenerateGuid();
+                    Console.WriteLine($"password = {password}");
+                    user.PasswordHash = _passwordHasher.HashPassword(user, password);
+                    _context.Users.Add(user);
+
+                    // var jsonResult = JsonSerializer.Serialize(resultTest, new JsonSerializerOptions { WriteIndented = true });
+                    // Console.WriteLine(jsonResult);
                     var result = await _userManager.CreateAsync(user, password);
 
                     if (!result.Succeeded)
@@ -60,6 +72,7 @@ namespace TaskManagement_BE.Repositories
                         await transaction.RollbackAsync();
                         return result;
                     }
+                    await _context.SaveChangesAsync();
 
                     var roleExists = await _roleManager.RoleExistsAsync(role);
                     if (!roleExists)
@@ -74,7 +87,7 @@ namespace TaskManagement_BE.Repositories
                         await transaction.RollbackAsync();
                         return IdentityResult.Failed(new IdentityError { Description = "Role creation failed." });
                     }
-                    Console.WriteLine($"Debug: roleExists {role} is {roleExists}");
+
                     await _context.SaveChangesAsync();
 
                     if (!string.IsNullOrEmpty(role) && roleExists)
@@ -89,7 +102,7 @@ namespace TaskManagement_BE.Repositories
 
                         var userTest = new User
                         {
-                            // Id = createdUser.Id,
+                            Id = createdUser.Id,
                             UserName = createdUser.UserName,
                             Email = createdUser.Email,
                         };
@@ -125,10 +138,31 @@ namespace TaskManagement_BE.Repositories
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task<bool> ValidatePasswordAsync(User user, string password)
+        public async Task<bool> ValidatePasswordAsync(string username, string password)
         {
-            return await _userManager.CheckPasswordAsync(user, password);
+            try
+            {
+                var user = await _context.Users
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.UserName == username);
+
+                if (user == null)
+                {
+                    Console.WriteLine("User not found.");
+                    return false;
+                }
+                var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+                bool isValid = Convert.ToBoolean(result);
+                return isValid;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ValidatePasswordAsync: {ex.Message}");
+                return false;
+            }
         }
+
+
 
         public async Task<bool> AddUserToRoleAsync(User user, string roleName)
         {
@@ -156,16 +190,16 @@ namespace TaskManagement_BE.Repositories
                 return true;
             }
 
-            var addRoleResult = await _userManager.AddToRoleAsync(user, roleName);
-            if (!addRoleResult.Succeeded)
-            {
-                Console.WriteLine($"Failed to add role {roleName} to user {user.UserName}. Errors:");
-                foreach (var error in addRoleResult.Errors)
-                {
-                    Console.WriteLine($" - {error.Code}: {error.Description}");
-                }
-                return false;
-            }
+            // var addRoleResult = await _userManager.AddToRoleAsync(user, roleName);
+            // if (!addRoleResult.Succeeded)
+            // {
+            //     Console.WriteLine($"Failed to add role {roleName} to user {user.UserName}. Errors:");
+            //     foreach (var error in addRoleResult.Errors)
+            //     {
+            //         Console.WriteLine($" - {error.Code}: {error.Description}");
+            //     }
+            //     return false;
+            // }
 
             Console.WriteLine($"User {user.UserName} added to role {roleName}.");
             return true;

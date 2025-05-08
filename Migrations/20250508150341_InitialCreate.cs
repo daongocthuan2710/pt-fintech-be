@@ -17,7 +17,7 @@ namespace TaskManagement_BE.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
@@ -30,11 +30,11 @@ namespace TaskManagement_BE.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    RefreshToken = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    PasswordHash = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -80,7 +80,7 @@ namespace TaskManagement_BE.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(36)", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
@@ -102,7 +102,7 @@ namespace TaskManagement_BE.Migrations
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     ProviderKey = table.Column<string>(type: "text", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "character varying(36)", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,7 +119,7 @@ namespace TaskManagement_BE.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "character varying(36)", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     RoleId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -143,7 +143,7 @@ namespace TaskManagement_BE.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "character varying(36)", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: true)
@@ -171,7 +171,7 @@ namespace TaskManagement_BE.Migrations
                     DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(36)", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

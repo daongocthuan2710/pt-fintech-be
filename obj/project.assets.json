@@ -810,18 +810,18 @@
           }
         }
       },
-      "Microsoft.IdentityModel.JsonWebTokens/6.15.1": {
+      "Microsoft.IdentityModel.JsonWebTokens/7.1.2": {
         "type": "package",
         "dependencies": {
-          "Microsoft.IdentityModel.Tokens": "6.15.1"
+          "Microsoft.IdentityModel.Tokens": "7.1.2"
         },
         "compile": {
-          "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
+          "lib/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
+          "lib/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
             "related": ".xml"
           }
         }
@@ -1091,19 +1091,19 @@
           "lib/netstandard2.0/System.CodeDom.dll": {}
         }
       },
-      "System.IdentityModel.Tokens.Jwt/6.15.1": {
+      "System.IdentityModel.Tokens.Jwt/7.1.2": {
         "type": "package",
         "dependencies": {
-          "Microsoft.IdentityModel.JsonWebTokens": "6.15.1",
-          "Microsoft.IdentityModel.Tokens": "6.15.1"
+          "Microsoft.IdentityModel.JsonWebTokens": "7.1.2",
+          "Microsoft.IdentityModel.Tokens": "7.1.2"
         },
         "compile": {
-          "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll": {
+          "lib/net8.0/System.IdentityModel.Tokens.Jwt.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll": {
+          "lib/net8.0/System.IdentityModel.Tokens.Jwt.dll": {
             "related": ".xml"
           }
         }
@@ -2436,22 +2436,26 @@
         "microsoft.identitymodel.abstractions.nuspec"
       ]
     },
-    "Microsoft.IdentityModel.JsonWebTokens/6.15.1": {
-      "sha512": "X5K/Pt02agb1V+khh5u7Q8hg02IVTshxV5owpR7UdQ9zfs0+A6qzca0F9jyv3o8SlOjEFHBabs+5cp7Noofzvg==",
+    "Microsoft.IdentityModel.JsonWebTokens/7.1.2": {
+      "sha512": "cloLGeZolXbCJhJBc5OC05uhrdhdPL6MWHuVUnkkUvPDeK7HkwThBaLZ1XjBQVk9YhxXE2OvHXnKi0PLleXxDg==",
       "type": "package",
-      "path": "microsoft.identitymodel.jsonwebtokens/6.15.1",
+      "path": "microsoft.identitymodel.jsonwebtokens/7.1.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "lib/net45/Microsoft.IdentityModel.JsonWebTokens.dll",
-        "lib/net45/Microsoft.IdentityModel.JsonWebTokens.xml",
         "lib/net461/Microsoft.IdentityModel.JsonWebTokens.dll",
         "lib/net461/Microsoft.IdentityModel.JsonWebTokens.xml",
+        "lib/net462/Microsoft.IdentityModel.JsonWebTokens.dll",
+        "lib/net462/Microsoft.IdentityModel.JsonWebTokens.xml",
         "lib/net472/Microsoft.IdentityModel.JsonWebTokens.dll",
         "lib/net472/Microsoft.IdentityModel.JsonWebTokens.xml",
+        "lib/net6.0/Microsoft.IdentityModel.JsonWebTokens.dll",
+        "lib/net6.0/Microsoft.IdentityModel.JsonWebTokens.xml",
+        "lib/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll",
+        "lib/net8.0/Microsoft.IdentityModel.JsonWebTokens.xml",
         "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.dll",
         "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.xml",
-        "microsoft.identitymodel.jsonwebtokens.6.15.1.nupkg.sha512",
+        "microsoft.identitymodel.jsonwebtokens.7.1.2.nupkg.sha512",
         "microsoft.identitymodel.jsonwebtokens.nuspec"
       ]
     },
@@ -2799,22 +2803,26 @@
         "version.txt"
       ]
     },
-    "System.IdentityModel.Tokens.Jwt/6.15.1": {
-      "sha512": "q3ZLyWmpX4+jW4XITf7Axd+9sC6w2NrQaKcQQT9A8waoknHgaNwSeookpUmPMQDqS0afT9Lh0JYub196vzuzbA==",
+    "System.IdentityModel.Tokens.Jwt/7.1.2": {
+      "sha512": "Thhbe1peAmtSBFaV/ohtykXiZSOkx59Da44hvtWfIMFofDA3M3LaVyjstACf2rKGn4dEDR2cUpRAZ0Xs/zB+7Q==",
       "type": "package",
-      "path": "system.identitymodel.tokens.jwt/6.15.1",
+      "path": "system.identitymodel.tokens.jwt/7.1.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "lib/net45/System.IdentityModel.Tokens.Jwt.dll",
-        "lib/net45/System.IdentityModel.Tokens.Jwt.xml",
         "lib/net461/System.IdentityModel.Tokens.Jwt.dll",
         "lib/net461/System.IdentityModel.Tokens.Jwt.xml",
+        "lib/net462/System.IdentityModel.Tokens.Jwt.dll",
+        "lib/net462/System.IdentityModel.Tokens.Jwt.xml",
         "lib/net472/System.IdentityModel.Tokens.Jwt.dll",
         "lib/net472/System.IdentityModel.Tokens.Jwt.xml",
+        "lib/net6.0/System.IdentityModel.Tokens.Jwt.dll",
+        "lib/net6.0/System.IdentityModel.Tokens.Jwt.xml",
+        "lib/net8.0/System.IdentityModel.Tokens.Jwt.dll",
+        "lib/net8.0/System.IdentityModel.Tokens.Jwt.xml",
         "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll",
         "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.xml",
-        "system.identitymodel.tokens.jwt.6.15.1.nupkg.sha512",
+        "system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512",
         "system.identitymodel.tokens.jwt.nuspec"
       ]
     },
@@ -3125,6 +3133,7 @@
       "Microsoft.IdentityModel.Tokens >= 8.9.0",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 7.0.11",
       "Swashbuckle.AspNetCore >= 8.1.1",
+      "System.IdentityModel.Tokens.Jwt >= 7.0.11",
       "System.Text.Json >= 9.0.4"
     ]
   },
@@ -3214,6 +3223,10 @@
             "target": "Package",
             "version": "[8.1.1, )"
           },
+          "System.IdentityModel.Tokens.Jwt": {
+            "target": "Package",
+            "version": "[7.0.11, )"
+          },
           "System.Text.Json": {
             "target": "Package",
             "version": "[9.0.4, )"
@@ -3241,5 +3254,17 @@
         "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.408/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Task-Management-BE depends on System.IdentityModel.Tokens.Jwt (>= 7.0.11) but System.IdentityModel.Tokens.Jwt 7.0.11 was not found. An approximate best match of System.IdentityModel.Tokens.Jwt 7.1.2 was resolved.",
+      "libraryId": "System.IdentityModel.Tokens.Jwt",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

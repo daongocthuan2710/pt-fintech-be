@@ -8,15 +8,16 @@ using TaskManagement_BE.DTOs;
 using TaskManagement_BE.Repositories;
 using Microsoft.AspNetCore.Identity;
 using TaskManagement_BE.Constants;
+using System.Text.Json;
 
 namespace TaskManagement_BE.Services
 {
     public interface IAuthService
     {
-        Task<string> LoginAsync(string username, string password);
-        Task<string> GenerateAccessTokenAsync(User user);
-        string GenerateRefreshToken();
-        Task<(string AccessToken, string RefreshToken)> RefreshTokenAsync(string refreshToken);
+        Task<User> LoginAsync(string username, string password);
+        Task<(string AccessToken, DateTime Expires)> GenerateAccessTokenAsync(User user);
+        // string GenerateRefreshToken();
+        // Task<(string AccessToken, string RefreshToken)> RefreshTokenAsync(string refreshToken);
 
         Task<IdentityResult> RegisterAsync(RegisterUserDto registerDto);
     }
@@ -57,28 +58,29 @@ namespace TaskManagement_BE.Services
             return await _userRepository.CreateUserAsync(user, registerDto.Password, ROLE.User);
         }
 
-        public async Task<string> LoginAsync(string username, string password)
+        public async Task<User> LoginAsync(string username, string password)
         {
             var user = await _userRepository.GetUserByUsernameAsync(username);
             if (user == null)
                 throw new UnauthorizedAccessException("Invalid username or password.");
 
-            if (!await _userRepository.ValidatePasswordAsync(user, password))
+            var isCorrectPassword = await _userRepository.ValidatePasswordAsync(user.UserName, password);
+            if (!isCorrectPassword)
                 throw new UnauthorizedAccessException("Invalid username or password.");
 
-            return await GenerateAccessTokenAsync(user);
+            return user;
         }
 
-        public async Task<string> GenerateAccessTokenAsync(User user)
+        public async Task<(string AccessToken, DateTime Expires)> GenerateAccessTokenAsync(User user)
         {
             var roles = new List<string> { "user" };
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? ""),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email ?? "")
-            };
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? ""),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email ?? "")
+    };
 
             foreach (var role in roles)
             {
@@ -89,41 +91,46 @@ namespace TaskManagement_BE.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var expires = DateTime.UtcNow.AddMinutes(60);
+
             var token = new JwtSecurityToken(
                 issuer: _config["JwtSettings:Issuer"],
                 audience: _config["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(60),
+                expires: expires,
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return (AccessToken: accessToken, Expires: expires);
         }
 
-        public async Task<(string AccessToken, string RefreshToken)> RefreshTokenAsync(string refreshToken)
-        {
-            var user = await _userRepository.GetUserByUsernameAsync(refreshToken);
-            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-                throw new UnauthorizedAccessException("Invalid or expired refresh token.");
 
-            var newAccessToken = await GenerateAccessTokenAsync(user);
-            var newRefreshToken = GenerateRefreshToken();
+        // public async Task<(string AccessToken, string RefreshToken)> RefreshTokenAsync(string refreshToken)
+        // {
+        //     var user = await _userRepository.GetUserByUsernameAsync(refreshToken);
+        //     if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        //         throw new UnauthorizedAccessException("Invalid or expired refresh token.");
 
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _userRepository.UpdateUserAsync(user);
+        //     var newAccessToken = await GenerateAccessTokenAsync(user);
+        //     var newRefreshToken = GenerateRefreshToken();
 
-            return (newAccessToken, newRefreshToken);
-        }
+        //     user.RefreshToken = newRefreshToken;
+        //     user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        //     await _userRepository.UpdateUserAsync(user);
 
-        public string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
-        }
+        //     return (newAccessToken, newRefreshToken);
+        // }
+
+        // public string GenerateRefreshToken()
+        // {
+        //     var randomNumber = new byte[32];
+        //     using (var rng = RandomNumberGenerator.Create())
+        //     {
+        //         rng.GetBytes(randomNumber);
+        //         return Convert.ToBase64String(randomNumber);
+        //     }
+        // }
     }
 }

@@ -18,6 +18,7 @@
           "Microsoft.IdentityModel.Tokens": "8.9.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "7.0.11",
           "Swashbuckle.AspNetCore": "8.1.1",
+          "System.IdentityModel.Tokens.Jwt": "7.1.2",
           "System.Text.Json": "9.0.4"
         },
         "runtime": {
@@ -385,14 +386,14 @@
           }
         }
       },
-      "Microsoft.IdentityModel.JsonWebTokens/6.15.1": {
+      "Microsoft.IdentityModel.JsonWebTokens/7.1.2": {
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "8.9.0"
         },
         "runtime": {
-          "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+          "lib/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
+            "assemblyVersion": "7.1.2.0",
+            "fileVersion": "7.1.2.41121"
           }
         }
       },
@@ -422,7 +423,7 @@
       "Microsoft.IdentityModel.Protocols.OpenIdConnect/6.15.1": {
         "dependencies": {
           "Microsoft.IdentityModel.Protocols": "6.15.1",
-          "System.IdentityModel.Tokens.Jwt": "6.15.1"
+          "System.IdentityModel.Tokens.Jwt": "7.1.2"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll": {
@@ -548,15 +549,15 @@
           }
         }
       },
-      "System.IdentityModel.Tokens.Jwt/6.15.1": {
+      "System.IdentityModel.Tokens.Jwt/7.1.2": {
         "dependencies": {
-          "Microsoft.IdentityModel.JsonWebTokens": "6.15.1",
+          "Microsoft.IdentityModel.JsonWebTokens": "7.1.2",
           "Microsoft.IdentityModel.Tokens": "8.9.0"
         },
         "runtime": {
-          "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+          "lib/net8.0/System.IdentityModel.Tokens.Jwt.dll": {
+            "assemblyVersion": "7.1.2.0",
+            "fileVersion": "7.1.2.41121"
           }
         }
       },
@@ -960,12 +961,12 @@
       "path": "microsoft.identitymodel.abstractions/8.9.0",
       "hashPath": "microsoft.identitymodel.abstractions.8.9.0.nupkg.sha512"
     },
-    "Microsoft.IdentityModel.JsonWebTokens/6.15.1": {
+    "Microsoft.IdentityModel.JsonWebTokens/7.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-X5K/Pt02agb1V+khh5u7Q8hg02IVTshxV5owpR7UdQ9zfs0+A6qzca0F9jyv3o8SlOjEFHBabs+5cp7Noofzvg==",
-      "path": "microsoft.identitymodel.jsonwebtokens/6.15.1",
-      "hashPath": "microsoft.identitymodel.jsonwebtokens.6.15.1.nupkg.sha512"
+      "sha512": "sha512-cloLGeZolXbCJhJBc5OC05uhrdhdPL6MWHuVUnkkUvPDeK7HkwThBaLZ1XjBQVk9YhxXE2OvHXnKi0PLleXxDg==",
+      "path": "microsoft.identitymodel.jsonwebtokens/7.1.2",
+      "hashPath": "microsoft.identitymodel.jsonwebtokens.7.1.2.nupkg.sha512"
     },
     "Microsoft.IdentityModel.Logging/8.9.0": {
       "type": "package",
@@ -1086,12 +1087,12 @@
       "path": "system.codedom/4.4.0",
       "hashPath": "system.codedom.4.4.0.nupkg.sha512"
     },
-    "System.IdentityModel.Tokens.Jwt/6.15.1": {
+    "System.IdentityModel.Tokens.Jwt/7.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-q3ZLyWmpX4+jW4XITf7Axd+9sC6w2NrQaKcQQT9A8waoknHgaNwSeookpUmPMQDqS0afT9Lh0JYub196vzuzbA==",
-      "path": "system.identitymodel.tokens.jwt/6.15.1",
-      "hashPath": "system.identitymodel.tokens.jwt.6.15.1.nupkg.sha512"
+      "sha512": "sha512-Thhbe1peAmtSBFaV/ohtykXiZSOkx59Da44hvtWfIMFofDA3M3LaVyjstACf2rKGn4dEDR2cUpRAZ0Xs/zB+7Q==",
+      "path": "system.identitymodel.tokens.jwt/7.1.2",
+      "hashPath": "system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512"
     },
     "System.IO.Pipelines/9.0.4": {
       "type": "package",

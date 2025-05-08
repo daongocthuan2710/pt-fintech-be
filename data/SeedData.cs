@@ -47,9 +47,6 @@ namespace TaskManagement_BE.data
             string adminUserName = "admin";
             string adminPassword = "Admin@123";
             var admin = await _userRepository.GetUserByUsernameAsync(adminUserName);
-            // Console.WriteLine("✅ Debug: admin");
-            // var jsonAdmin = JsonSerializer.Serialize(admin, new JsonSerializerOptions { WriteIndented = true });
-            // Console.WriteLine(jsonAdmin);
             if (admin == null)
             {
                 admin = new User

@@ -32,6 +32,7 @@ namespace TaskManagement_BE.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
@@ -89,7 +90,7 @@ namespace TaskManagement_BE.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("character varying(36)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -111,7 +112,7 @@ namespace TaskManagement_BE.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("character varying(36)");
+                        .HasColumnType("text");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -123,7 +124,7 @@ namespace TaskManagement_BE.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("character varying(36)");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("text");
@@ -138,7 +139,7 @@ namespace TaskManagement_BE.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("character varying(36)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("text");
@@ -185,7 +186,7 @@ namespace TaskManagement_BE.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("character varying(36)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -197,8 +198,7 @@ namespace TaskManagement_BE.Migrations
             modelBuilder.Entity("TaskManagement_BE.models.User", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
+                        .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
@@ -230,7 +230,8 @@ namespace TaskManagement_BE.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
@@ -239,8 +240,7 @@ namespace TaskManagement_BE.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("RefreshToken")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
                         .HasColumnType("timestamp with time zone");
