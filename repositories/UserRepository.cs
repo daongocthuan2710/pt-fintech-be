@@ -7,7 +7,6 @@ using System.Text.Json;
 
 namespace TaskManagement_BE.Repositories
 {
-    private readonly ILogger<AuthService> _logger;
     public interface IUserRepository
     {
         Task<User?> GetUserByUsernameAsync(string username);
@@ -15,17 +14,24 @@ namespace TaskManagement_BE.Repositories
         Task<IdentityResult> CreateUserAsync(User user, string password);
         Task UpdateUserAsync(User user);
         Task<bool> ValidatePasswordAsync(User user, string password);
+        Task<bool> AddUserToRoleAsync(User user, string roleName);
+        Task<bool> RoleExistsAsync(string roleName);
+        Task<IdentityRole> CreateRoleAsync(string roleName);
+        Task<bool> IsUserInRoleAsync(User user, string roleName);
     }
 
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<User> _userManager;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly AppDbContext _context;
 
-        public UserRepository(UserManager<User> userManager, AppDbContext context)
+        public UserRepository(UserManager<User> userManager, AppDbContext context, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _context = context;
+            _roleManager = roleManager;
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username)
@@ -41,12 +47,6 @@ namespace TaskManagement_BE.Repositories
         public async Task<IdentityResult> CreateUserAsync(User user, string password)
         {
             user.Id = GuidUtil.GenerateGuid();
-            string jsonUser = JsonSerializer.Serialize(user, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-            _logger.LogInformation("Debug: User - {User}", jsonUser);
             return await _userManager.CreateAsync(user, password);
         }
 
@@ -58,6 +58,30 @@ namespace TaskManagement_BE.Repositories
         public async Task<bool> ValidatePasswordAsync(User user, string password)
         {
             return await _userManager.CheckPasswordAsync(user, password);
+        }
+
+        public async Task<bool> AddUserToRoleAsync(User user, string roleName)
+        {
+            await _userManager.AddToRoleAsync(user, roleName);
+            return true;
+        }
+
+        public async Task<bool> RoleExistsAsync(string roleName)
+        {
+            Console.WriteLine($"✅ Debug: roleName is {roleName}");
+            return await _roleManager.RoleExistsAsync(roleName);
+        }
+
+        public async Task<IdentityRole> CreateRoleAsync(string roleName)
+        {
+            var role = new IdentityRole(roleName);
+            await _roleManager.CreateAsync(role);
+            return role;
+        }
+
+        public async Task<bool> IsUserInRoleAsync(User user, string roleName)
+        {
+            return await _userManager.IsInRoleAsync(user, roleName);
         }
     }
 }

@@ -4,56 +4,73 @@ using System.Text.Json;
 using TaskManagement_BE.data;
 using TaskManagement_BE.models;
 using TaskManagement_BE.utils;
+using TaskManagement_BE.Repositories;
 
 namespace TaskManagement_BE.data
 {
     public static class SeedData
     {
+        private static IUserRepository _userRepository;
+        private static RoleManager<IdentityRole> _roleManager;
+        private static AppDbContext _context;
+
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var services = scope.ServiceProvider;
-            var userManager = services.GetRequiredService<UserManager<User>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            var context = services.GetRequiredService<AppDbContext>();
+            _userRepository = services.GetRequiredService<IUserRepository>();
+            _roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            _context = services.GetRequiredService<AppDbContext>();
 
-            await context.Database.MigrateAsync();
-
-            // Make sure the database has applied the migrations
-            await context.Database.MigrateAsync();
-
-            // Seed Roles
-            await SeedRolesAsync(roleManager);
-
-            // Seed Admin User
-            await SeedAdminUserAsync(userManager, roleManager);
-
-            // Seed Normal Users and Tasks
-            // await SeedUsersAndTasksAsync(userManager, roleManager, context);
+            await _context.Database.MigrateAsync();
+            await SeedRolesAsync();
+            await SeedAdminUserAsync();
+            // await SeedUsersAndTasksAsync();
         }
 
-        // Seed roles method (admin and user)
-        private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        private static async Task SeedRolesAsync()
         {
             var roles = new[] { "admin", "user" };
             foreach (var role in roles)
             {
-                if (!await roleManager.RoleExistsAsync(role))
+                var isExisted = await _userRepository.RoleExistsAsync(role);
+                Console.WriteLine($"✅ Debug: isExisted is {isExisted}");
+                if (!isExisted)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                    var result = await _userRepository.CreateRoleAsync(role);
+                    // if (result.Succeeded)
+                    // {
+                    //     Console.WriteLine($"Role {role} created successfully.");
+                    // }
+                    // else
+                    // {
+                    //     Console.WriteLine($"Failed to create role {role}. Errors:");
+                    //     foreach (var error in result.Errors)
+                    //     {
+                    //         Console.WriteLine($" - {error.Code}: {error.Description}");
+                    //     }
+                    // }
                 }
             }
         }
 
-
-        // Admin seed method
-        private static async Task SeedAdminUserAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        private static async Task SeedAdminUserAsync()
         {
-            var admin = await userManager.Users.FirstOrDefaultAsync(u => u.UserName == "admin");
+            string adminUserName = "admin";
+            string adminPassword = "Admin@123";
+            var admin = await _userRepository.GetUserByUsernameAsync(adminUserName);
+            Console.WriteLine("✅ Debug: admin");
+            var jsonAdmin = JsonSerializer.Serialize(admin, new JsonSerializerOptions { WriteIndented = true });
+            Console.WriteLine(jsonAdmin);
             if (admin == null)
             {
-                admin = new User { Id = GuidUtil.GenerateGuid(), UserName = "admin", Email = "admin@example.com", EmailConfirmed = true };
-                var result = await userManager.CreateAsync(admin, "Admin@123");
+                admin = new User
+                {
+                    UserName = adminUserName,
+                    Email = "admin@example.com",
+                    EmailConfirmed = true
+                };
+                var result = await _userRepository.CreateUserAsync(admin, adminPassword);
                 if (result.Succeeded)
                 {
                     Console.WriteLine($"Admin created successfully.");
@@ -65,53 +82,36 @@ namespace TaskManagement_BE.data
                     {
                         Console.WriteLine($" - {error.Code}: {error.Description}");
                     }
-
                 }
-                await userManager.AddToRoleAsync(admin, "admin");
+
+                var adminInfo = await _userRepository.GetUserByUsernameAsync(adminUserName);
+                Console.WriteLine("✅ Debug: adminInfo");
+                var jsonAdminInfo = JsonSerializer.Serialize(adminInfo, new JsonSerializerOptions { WriteIndented = true });
+                Console.WriteLine(adminInfo);
+                // await _userRepository.AddUserToRoleAsync(admin, "admin");
             }
-
-            if (!await roleManager.RoleExistsAsync("admin"))
-                await roleManager.CreateAsync(new IdentityRole("admin"));
-
-            if (!await userManager.IsInRoleAsync(admin, "admin"))
-                await userManager.AddToRoleAsync(admin, "admin");
         }
 
-        // Method of seeding users and tasks
-        private static async Task SeedUsersAndTasksAsync(
-            UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager,
-            AppDbContext context)
+        private static async Task SeedUsersAndTasksAsync()
         {
             const int numOfUsers = 3;
             for (int i = 1; i <= numOfUsers; i++)
             {
                 var userName = $"user{i}";
                 var userEmail = $"user{i}@example.com";
-                var user = await userManager.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-                string validateUser = JsonSerializer.Serialize(user, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-                Console.WriteLine(validateUser);
+                var user = await _userRepository.GetUserByUsernameAsync(userName);
 
                 if (user == null)
                 {
-                    user = new User { Id = GuidUtil.GenerateGuid(), UserName = userName, NormalizedUserName = userName.ToUpper(), Email = userEmail, EmailConfirmed = true };
-
-                    if (string.IsNullOrWhiteSpace(user.UserName))
+                    user = new User
                     {
-                        Console.WriteLine("UserName cannot be empty.");
-                        break;
-                    }
+                        Id = GuidUtil.GenerateGuid(),
+                        UserName = userName,
+                        Email = userEmail,
+                        EmailConfirmed = true
+                    };
 
-                    var result = await userManager.CreateAsync(user, "User@123");
-                    string jsonResult = JsonSerializer.Serialize(result, new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    });
-                    Console.WriteLine(jsonResult);
-
+                    var result = await _userRepository.CreateUserAsync(user, "User@123");
                     if (result.Succeeded)
                     {
                         Console.WriteLine($"User {userName} created successfully.");
@@ -123,24 +123,18 @@ namespace TaskManagement_BE.data
                         {
                             Console.WriteLine($" - {error.Code}: {error.Description}");
                         }
-                        break;
+                        continue;
                     }
                 }
 
-                if (!await roleManager.RoleExistsAsync("user"))
-                    await roleManager.CreateAsync(new IdentityRole("user"));
-
-                if (!await userManager.IsInRoleAsync(user, "user"))
-                    await userManager.AddToRoleAsync(user, "user");
-
-                // await SeedTasksForUserAsync(context, user);
+                await _userRepository.AddUserToRoleAsync(user, "user");
+                await SeedTasksForUserAsync(user);
             }
         }
 
-        // Method of seeding tasks in batch
-        private static async Task SeedTasksForUserAsync(AppDbContext context, User user)
+        private static async Task SeedTasksForUserAsync(User user)
         {
-            if (await context.Tasks.AnyAsync(t => t.UserId == user.Id))
+            if (await _context.Tasks.AnyAsync(t => t.UserId == user.Id))
                 return;
 
             var tasks = new List<TaskItem>();
@@ -160,21 +154,14 @@ namespace TaskManagement_BE.data
             }
 
             Console.WriteLine("✅ Debug: User");
-            string jsonUser = JsonSerializer.Serialize(user, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            string jsonUser = JsonSerializer.Serialize(user, new JsonSerializerOptions { WriteIndented = true });
             Console.WriteLine(jsonUser);
             Console.WriteLine("✅ Debug: Tasks");
-            string jsonTasks = JsonSerializer.Serialize(tasks, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            string jsonTasks = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
             Console.WriteLine(jsonTasks);
 
-            await context.Tasks.AddRangeAsync(tasks);
-            await context.SaveChangesAsync();
+            await _context.Tasks.AddRangeAsync(tasks);
+            await _context.SaveChangesAsync();
         }
-
     }
 }

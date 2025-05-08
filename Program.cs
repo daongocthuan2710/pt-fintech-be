@@ -56,6 +56,8 @@ builder.Services.AddSwaggerGen();
 builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
+builder.Services.AddScoped<UserManager<User>>();
 
 var app = builder.Build();
 
