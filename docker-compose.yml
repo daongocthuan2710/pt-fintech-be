@@ -1,20 +1,28 @@
-version: "3.8"
-
 services:
-  api:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: task-management-be
     ports:
       - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - postgres
+    restart: always
 
   postgres:
-    image: postgres:15
+    image: postgres:14
+    container_name: task-management-be-postgres
     environment:
       POSTGRES_USER: new_test_user
       POSTGRES_PASSWORD: new_test_password
       POSTGRES_DB: task_management_db
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

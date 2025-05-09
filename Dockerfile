@@ -1,14 +1,14 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-EXPOSE 5000
-
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
+COPY ["Task-Management-BE.sln", "./"]
+COPY ["Task-Management-BE.csproj", "./"]
+RUN dotnet restore "Task-Management-BE.csproj"
 COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app
+RUN dotnet publish "Task-Management-BE.csproj" -c Release -o /app
 
-FROM base AS final
+# Stage 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app .
-ENTRYPOINT ["dotnet", "TaskManagementAPI.dll"]
+ENTRYPOINT ["dotnet", "TaskManagement_BE.dll"]
