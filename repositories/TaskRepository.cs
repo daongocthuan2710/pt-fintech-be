@@ -12,7 +12,7 @@ namespace TaskManagement_BE.Repositories
     {
         Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az);
 
-        Task<TaskItem?> GetTaskByIdAsync(int id, string userId, string role);
+        Task<TaskItem?> GetTaskByIdAsync(int id);
         Task<TaskItem> CreateTaskAsync(TaskItem task);
         Task<TaskItem?> UpdateTaskAsync(TaskItem task);
         Task<bool> DeleteTaskAsync(int id, string userId, string role);
@@ -50,7 +50,7 @@ namespace TaskManagement_BE.Repositories
 
             if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(az))
             {
-                if (sort == "due_date")
+                if (sort == "due_date" || sort == "dueDate")
                 {
                     string sortDirection = az?.ToLower() == "desc" ? "descending" : "ascending";
                     query = query.OrderBy($"DueDate {sortDirection}");
@@ -62,10 +62,10 @@ namespace TaskManagement_BE.Repositories
         }
 
 
-        public async Task<TaskItem?> GetTaskByIdAsync(int id, string userId, string role)
+        public async Task<TaskItem?> GetTaskByIdAsync(int id)
         {
             return await _context.Tasks
-                .FirstOrDefaultAsync(t => t.Id == id && (t.UserId == userId || role == "admin"));
+                .FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<TaskItem> CreateTaskAsync(TaskItem task)

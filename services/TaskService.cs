@@ -8,7 +8,7 @@ namespace TaskManagement_BE.Services
         Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az);
         Task<TaskItem?> GetTaskDetailAsync(int id, string userId, string role);
         Task<TaskItem> CreateTaskAsync(TaskItem task, string userId);
-        Task<TaskItem?> UpdateTaskAsync(int id, TaskItem task, string userId, string role);
+        Task<TaskItem?> UpdateTaskAsync(int id, TaskItem task);
         Task<bool> DeleteTaskAsync(int id, string userId, string role);
     }
 
@@ -29,7 +29,7 @@ namespace TaskManagement_BE.Services
 
         public async Task<TaskItem?> GetTaskDetailAsync(int id, string userId, string role)
         {
-            return await _taskRepository.GetTaskByIdAsync(id, userId, role);
+            return await _taskRepository.GetTaskByIdAsync(id);
         }
 
         public async Task<TaskItem> CreateTaskAsync(TaskItem task, string userId)
@@ -38,9 +38,9 @@ namespace TaskManagement_BE.Services
             return await _taskRepository.CreateTaskAsync(task);
         }
 
-        public async Task<TaskItem?> UpdateTaskAsync(int id, TaskItem task, string userId, string role)
+        public async Task<TaskItem?> UpdateTaskAsync(int id, TaskItem task)
         {
-            var existingTask = await _taskRepository.GetTaskByIdAsync(id, userId, role);
+            var existingTask = await _taskRepository.GetTaskByIdAsync(id);
             if (existingTask == null) return null;
 
             existingTask.Title = task.Title;

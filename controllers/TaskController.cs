@@ -116,14 +116,30 @@ namespace TaskManagement_BE.controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, [FromBody] TaskItem task)
         {
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var updatedTask = await _taskService.UpdateTaskAsync(id, task, userId, role);
-            if (updatedTask == null)
-                return NotFound("Task not found.");
-
-            return Ok(updatedTask);
+            try
+            {
+                var updatedTask = await _taskService.UpdateTaskAsync(id, task);
+                if (updatedTask == null)
+                    return NotFound("Task not found.");
+                return Ok(new
+                {
+                    data = updatedTask,
+                    status = true,
+                    code = 200,
+                    message = "Task updated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    data = (object?)null,
+                    status = false,
+                    code = 500,
+                    message = "An error occurred while updating task."
+                });
+            }
         }
 
         [HttpDelete("{id}")]
