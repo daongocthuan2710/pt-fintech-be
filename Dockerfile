@@ -1,15 +1,21 @@
-# Stage 1: Build
+# Use official .NET SDK 8.0 image for build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-COPY ["Task-Management-BE.sln", "./"]
-COPY ["Task-Management-BE.csproj", "./"]
-RUN dotnet restore "Task-Management-BE.csproj"
-COPY . .
-WORKDIR /src
-RUN dotnet publish "Task-Management-BE.csproj" -c Release -o /app/publish
+WORKDIR /app
 
-# Stage 2: Runtime
+# Copy everything and restore dependencies
+COPY . .
+RUN dotnet restore
+
+# Build the application
+RUN dotnet publish -c Release -o /app/publish
+
+# Use runtime image for better performance
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Expose the application port (5000)
+EXPOSE 5000
+
+# Run the application
 ENTRYPOINT ["dotnet", "TaskManagement_BE.dll"]
