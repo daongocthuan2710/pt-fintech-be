@@ -10,7 +10,7 @@ namespace TaskManagement_BE.Repositories
 {
     public interface ITaskRepository
     {
-        Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az);
+        Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az, string? searchTitle = null);
 
         Task<TaskItem?> GetTaskByIdAsync(int id);
         Task<TaskItem> CreateTaskAsync(TaskItem task);
@@ -27,7 +27,7 @@ namespace TaskManagement_BE.Repositories
             _context = context;
         }
 
-        public async Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az)
+        public async Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az, string? searchTitle = null)
         {
             var query = _context.Tasks.AsQueryable();
 
@@ -36,6 +36,14 @@ namespace TaskManagement_BE.Repositories
                 query = query.Where(t => t.UserId == userId);
             }
 
+            Console.WriteLine($"searchTitle: {searchTitle}");
+            // Handle search by Title  
+            if (!string.IsNullOrEmpty(searchTitle))
+            {
+                query = query.Where(t => t.Title.Contains(searchTitle));
+            }
+
+            // Handle filter
             if (!string.IsNullOrEmpty(filterField) && filterValues?.Any() == true)
             {
                 if (filterField.Equals("status", StringComparison.OrdinalIgnoreCase))
@@ -48,6 +56,7 @@ namespace TaskManagement_BE.Repositories
                 }
             }
 
+            // Handle sort
             if (!string.IsNullOrEmpty(sort) && !string.IsNullOrEmpty(az))
             {
                 if (sort == "due_date" || sort == "dueDate")

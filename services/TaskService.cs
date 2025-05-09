@@ -5,7 +5,7 @@ namespace TaskManagement_BE.Services
 {
     public interface ITaskService
     {
-        Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az);
+        Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az, string? searchTitle = null);
         Task<TaskItem?> GetTaskDetailAsync(int id, string userId, string role);
         Task<TaskItem> CreateTaskAsync(TaskItem task, string userId);
         Task<TaskItem?> UpdateTaskAsync(int id, TaskItem task);
@@ -21,9 +21,9 @@ namespace TaskManagement_BE.Services
             _taskRepository = taskRepository;
         }
 
-        public async Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az)
+        public async Task<List<TaskItem>> GetTasksAsync(string userId, string role, string? filterField, string[]? filterValues, string? sort, string? az, string? searchTitle = null)
         {
-            return await _taskRepository.GetTasksAsync(userId, role, filterField, filterValues, sort, az);
+            return await _taskRepository.GetTasksAsync(userId, role, filterField, filterValues, sort, az, searchTitle);
         }
 
 

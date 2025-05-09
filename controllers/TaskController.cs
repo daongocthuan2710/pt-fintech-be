@@ -28,6 +28,7 @@ namespace TaskManagement_BE.controllers
             [FromQuery] string? filterValues = null,
             [FromQuery] string? sort = null,
             [FromQuery] string? az = "asc",
+            [FromQuery] string? searchTitle = null,
             [FromQuery] string? token = null)
         {
             try
@@ -45,7 +46,7 @@ namespace TaskManagement_BE.controllers
             ? HttpUtility.UrlDecode(filterValues).Split(',', StringSplitOptions.RemoveEmptyEntries)
             : new string[0];
 
-                var tasks = await _taskService.GetTasksAsync(userId, role, filterField, customFilterValues, sort, az);
+                var tasks = await _taskService.GetTasksAsync(userId, role, filterField, customFilterValues, sort, az, searchTitle);
 
                 return Ok(new
                 {
