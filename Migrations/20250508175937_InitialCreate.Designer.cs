@@ -12,7 +12,7 @@ using TaskManagement_BE.data;
 namespace TaskManagement_BE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250508150341_InitialCreate")]
+    [Migration("20250508175937_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -247,6 +247,10 @@ namespace TaskManagement_BE.Migrations
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");

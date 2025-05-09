@@ -19,6 +19,7 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": "7.0.11",
           "Swashbuckle.AspNetCore": "8.1.1",
           "System.IdentityModel.Tokens.Jwt": "7.1.2",
+          "System.Linq.Dynamic.Core": "1.6.2",
           "System.Text.Json": "9.0.4"
         },
         "runtime": {
@@ -569,6 +570,14 @@
           }
         }
       },
+      "System.Linq.Dynamic.Core/1.6.2": {
+        "runtime": {
+          "lib/net8.0/System.Linq.Dynamic.Core.dll": {
+            "assemblyVersion": "1.6.2.0",
+            "fileVersion": "1.6.2.0"
+          }
+        }
+      },
       "System.Security.AccessControl/4.5.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "2.0.0",
@@ -1100,6 +1109,13 @@
       "sha512": "sha512-luF2Xba+lTe2GOoNQdZLe8q7K6s7nSpWZl9jIwWNMszN4/Yv0lmxk9HISgMmwdyZ83i3UhAGXaSY9o6IJBUuuA==",
       "path": "system.io.pipelines/9.0.4",
       "hashPath": "system.io.pipelines.9.0.4.nupkg.sha512"
+    },
+    "System.Linq.Dynamic.Core/1.6.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-piIcdelf4dGotuIjFlyu7JLIZkYTmYM0ZTLGpCcxs9iCJFflhJht0nchkIV+GS5wfA3OtC3QNjIcUqyOdBdOsA==",
+      "path": "system.linq.dynamic.core/1.6.2",
+      "hashPath": "system.linq.dynamic.core.1.6.2.nupkg.sha512"
     },
     "System.Security.AccessControl/4.5.0": {
       "type": "package",

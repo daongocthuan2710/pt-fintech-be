@@ -1,80 +1,119 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TaskManagement_BE.data;
+using TaskManagement_BE.Services;
 using TaskManagement_BE.models;
+using System;
+using System.Web;
 
 namespace TaskManagement_BE.controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    // [Authorize]
     public class TaskController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ITaskService _taskService;
 
-        public TaskController(AppDbContext context)
+        public TaskController(ITaskService taskService)
         {
-            _context = context;
+            _taskService = taskService;
         }
 
         [HttpGet]
-        public IActionResult GetTasks()
+        public async Task<IActionResult> GetTasks(
+            [FromQuery] string? userId,
+            [FromQuery] string? role,
+            [FromQuery] string? filterField = null,
+            [FromQuery] string? filterValues = null,
+            [FromQuery] string? sort = null,
+            [FromQuery] string? az = "asc",
+            [FromQuery] string? token = null)
+        {
+            try
+            {
+                if (userId == null || role == null)
+                    return Unauthorized(new
+                    {
+                        data = (object?)null,
+                        status = "fail",
+                        code = 401,
+                        message = "Invalid user."
+                    });
+
+                string[] customFilterValues = filterValues != null
+            ? HttpUtility.UrlDecode(filterValues).Split(',', StringSplitOptions.RemoveEmptyEntries)
+            : new string[0];
+
+                var tasks = await _taskService.GetTasksAsync(userId, role, filterField, customFilterValues, sort, az);
+
+                return Ok(new
+                {
+                    data = tasks,
+                    status = "success",
+                    code = 200,
+                    message = "Tasks retrieved successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    data = (object?)null,
+                    status = "error",
+                    code = 500,
+                    message = "An error occurred while retrieving tasks."
+                });
+            }
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTaskDetail(int id)
         {
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("User not authorized.");
-            }
+            var task = await _taskService.GetTaskDetailAsync(id, userId, role);
+            if (task == null)
+                return NotFound("Task not found.");
 
-            if (role == "admin")
-            {
-                var tasks = _context.Tasks.ToList();
-                return Ok(tasks);
-            }
-
-            var userTasks = _context.Tasks
-                .Where(t => t.UserId == userId)
-                .ToList();
-
-            return Ok(userTasks);
+            return Ok(task);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateTask([FromBody] TaskItem task)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            task.CreateAt = DateTime.UtcNow;
-            task.UpdateAt = DateTime.UtcNow;
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
-
-            return Ok(task);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var createdTask = await _taskService.CreateTaskAsync(task, userId);
+            return Ok(createdTask);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, [FromBody] TaskItem task)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var existingTask = await _context.Tasks.FindAsync(id);
-            if (existingTask == null)
-                return NotFound();
+            var updatedTask = await _taskService.UpdateTaskAsync(id, task, userId, role);
+            if (updatedTask == null)
+                return NotFound("Task not found.");
 
-            existingTask.Title = task.Title;
-            existingTask.Description = task.Description;
-            existingTask.Status = task.Status;
-            existingTask.DueDate = task.DueDate;
-            existingTask.UpdateAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-            return Ok(existingTask);
+            return Ok(updatedTask);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTask(int id)
+        {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var result = await _taskService.DeleteTaskAsync(id, userId, role);
+            if (!result)
+                return NotFound("Task not found.");
+
+            return Ok("Task deleted successfully.");
+        }
     }
 }

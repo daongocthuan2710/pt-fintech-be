@@ -58,12 +58,9 @@ namespace TaskManagement_BE.Repositories
                 try
                 {
                     user.Id = GuidUtil.GenerateGuid();
-                    Console.WriteLine($"password = {password}");
+                    user.Role = role;
                     user.PasswordHash = _passwordHasher.HashPassword(user, password);
                     _context.Users.Add(user);
-
-                    // var jsonResult = JsonSerializer.Serialize(resultTest, new JsonSerializerOptions { WriteIndented = true });
-                    // Console.WriteLine(jsonResult);
                     var result = await _userManager.CreateAsync(user, password);
 
                     if (!result.Succeeded)
@@ -73,53 +70,6 @@ namespace TaskManagement_BE.Repositories
                         return result;
                     }
                     await _context.SaveChangesAsync();
-
-                    var roleExists = await _roleManager.RoleExistsAsync(role);
-                    if (!roleExists)
-                    {
-                        await this.CreateRoleAsync(role);
-                    }
-
-                    roleExists = await _roleManager.RoleExistsAsync(role);
-                    if (!roleExists)
-                    {
-                        Console.WriteLine("Role creation failed.");
-                        await transaction.RollbackAsync();
-                        return IdentityResult.Failed(new IdentityError { Description = "Role creation failed." });
-                    }
-
-                    await _context.SaveChangesAsync();
-
-                    if (!string.IsNullOrEmpty(role) && roleExists)
-                    {
-                        var createdUser = await _userManager.FindByIdAsync(user.Id.ToString());
-                        if (createdUser == null)
-                        {
-                            Console.WriteLine("Debug: User not found after creation.");
-                            await transaction.RollbackAsync();
-                            return IdentityResult.Failed(new IdentityError { Description = "User creation failed." });
-                        }
-
-                        var userTest = new User
-                        {
-                            Id = createdUser.Id,
-                            UserName = createdUser.UserName,
-                            Email = createdUser.Email,
-                        };
-                        Console.WriteLine("Debug: userTest");
-                        var jsonCreatedUser = JsonSerializer.Serialize(userTest, new JsonSerializerOptions { WriteIndented = true });
-                        Console.WriteLine(userTest);
-                        var addRoleResult = await this.AddUserToRoleAsync(userTest, role);
-                        if (!addRoleResult)
-                        {
-                            Console.WriteLine("Failed to add role to user.");
-                            await transaction.RollbackAsync();
-                            return IdentityResult.Failed(new IdentityError { Description = "Failed to add role to user." });
-                        }
-
-                        Console.WriteLine($"Debug: Role {role} added to user.");
-                    }
-
                     await transaction.CommitAsync();
                     return result;
                 }

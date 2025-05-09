@@ -28,18 +28,15 @@ namespace TaskManagement_BE.controllers
             try
             {
                 var user = await _authService.LoginAsync(model.Username, model.Password);
-                var jsonResult = JsonSerializer.Serialize(user, new JsonSerializerOptions { WriteIndented = true });
-                Console.WriteLine(jsonResult);
-
                 if (user != null)
                 {
                     var (accessToken, expires) = await _authService.GenerateAccessTokenAsync(user);
-                    var jsonAccessToken = JsonSerializer.Serialize(new { accessToken, expires }, new JsonSerializerOptions { WriteIndented = true });
-                    Console.WriteLine(jsonAccessToken);
-
                     return Ok(new
                     {
                         Id = user.Id,
+                        Role = user.Role,
+                        UserName = user.UserName,
+                        Email = user.Email,
                         AccessToken = accessToken,
                         Expires = expires
                     });

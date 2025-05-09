@@ -66,3 +66,4 @@
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/Task-Management-BE.pdb
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/Task-Management-BE.genruntimeconfig.cache
 /Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/obj/Debug/net8.0/ref/Task-Management-BE.dll
+/Users/mac/Public/Coding/Interview/pt-fintech/Task-Management-BE/bin/Debug/net8.0/System.Linq.Dynamic.Core.dll

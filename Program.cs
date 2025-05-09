@@ -7,8 +7,17 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TaskManagement_BE.Services;
 using TaskManagement_BE.Repositories;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHttpsRedirection(options =>
+    {
+        options.HttpsPort = null;
+    });
+}
 
 // Config CORS
 builder.Services.AddCors(options =>
@@ -25,6 +34,16 @@ builder.Services.AddCors(options =>
 ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseCors("AllowAllOrigins");
 
 // Configure Middlewares
@@ -53,39 +72,67 @@ void ConfigureServices(IServiceCollection services, ConfigurationManager configu
     .AddDefaultTokenProviders();
 
     // JWT Authentication Configuration
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            options.RequireHttpsMetadata = false;
-            options.SaveToken = true;
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = configuration["JwtSettings:Issuer"],
-                ValidAudience = configuration["JwtSettings:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                    configuration["JwtSettings:SecretKey"] ?? throw new InvalidOperationException("JWT Secret Key is not configured.")
-                ))
-            };
-        });
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                builder.Configuration["JwtSettings:SecretKey"]
+            ))
+        };
+    });
 
     // Dependency Injection for Services and Repositories
-    services.AddScoped<IUserRepository, UserRepository>();
     services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<ITaskService, TaskService>();
     services.AddScoped<RoleManager<IdentityRole>>();
     services.AddScoped<UserManager<User>>();
+    services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 
     // Controllers and Swagger
     services.AddControllers();
     services.AddEndpointsApiExplorer();
-    services.AddSwaggerGen();
     services.AddControllersWithViews();
     services.AddIdentityCore<User>()
         .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<AppDbContext>();
+    builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+    });
+});
 }
 
 // Method to Configure Middlewares

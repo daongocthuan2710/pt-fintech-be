@@ -26,7 +26,7 @@ namespace TaskManagement_BE.data
             await _context.Database.MigrateAsync();
             await SeedRolesAsync();
             await SeedAdminUserAsync();
-            // await SeedUsersAndTasksAsync();
+            await SeedUsersAndTasksAsync();
         }
 
         private static async Task SeedRolesAsync()
@@ -68,7 +68,6 @@ namespace TaskManagement_BE.data
                         Console.WriteLine($" - {error.Code}: {error.Description}");
                     }
                 }
-                // await _userRepository.AddUserToRoleAsync(admin, "admin");
             }
         }
 
@@ -85,7 +84,6 @@ namespace TaskManagement_BE.data
                 {
                     user = new User
                     {
-                        Id = GuidUtil.GenerateGuid(),
                         UserName = userName,
                         Email = userEmail,
                         EmailConfirmed = true
@@ -107,7 +105,7 @@ namespace TaskManagement_BE.data
                     }
                 }
 
-                await _userRepository.AddUserToRoleAsync(user, ROLE.User);
+                user = await _userRepository.GetUserByUsernameAsync(userName);
                 await SeedTasksForUserAsync(user);
             }
         }

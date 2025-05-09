@@ -13,6 +13,7 @@ namespace TaskManagement_BE.models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public override string UserName { get; set; } = string.Empty;
         public string Email { get; set; }
+        public string Role { get; set; } // 'admin' | 'user'
         public string? PasswordHash { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
