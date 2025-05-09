@@ -20,18 +20,17 @@ namespace TaskManagement_BE.models
         [Required]
         public string Status { get; set; } = string.Empty;
 
-        public DateTime? DueDate { get; set; }
-
         [Required]
+        public double DueDate { get; set; }
+
         public DateTime CreateAt { get; set; } = DateTime.UtcNow;
 
-        [Required]
         public DateTime UpdateAt { get; set; } = DateTime.UtcNow;
 
         [Required]
         public string UserId { get; set; } = string.Empty;
 
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public User? User { get; set; }
     }
 }

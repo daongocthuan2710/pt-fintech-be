@@ -126,7 +126,7 @@ namespace TaskManagement_BE.data
                     Status = "to-do",
                     CreateAt = DateTime.UtcNow,
                     UpdateAt = DateTime.UtcNow,
-                    DueDate = DateTime.UtcNow.AddDays(j),
+                    DueDate = DateTime.UtcNow.AddDays(j).ToUniversalTime().Subtract(DateTime.UnixEpoch).TotalMilliseconds,
                     UserId = user.Id
                 });
             }

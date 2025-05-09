@@ -169,7 +169,7 @@ namespace TaskManagement_BE.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     Status = table.Column<string>(type: "text", nullable: false),
-                    DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DueDate = table.Column<double>(type: "double precision", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false)

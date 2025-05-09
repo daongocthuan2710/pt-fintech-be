@@ -170,8 +170,8 @@ namespace TaskManagement_BE.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<double>("DueDate")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Status")
                         .IsRequired()

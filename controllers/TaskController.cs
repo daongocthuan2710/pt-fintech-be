@@ -85,9 +85,32 @@ namespace TaskManagement_BE.controllers
         [HttpPost]
         public async Task<IActionResult> CreateTask([FromBody] TaskItem task)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var createdTask = await _taskService.CreateTaskAsync(task, userId);
-            return Ok(createdTask);
+
+            try
+            {
+                var userId = task.UserId;
+                // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var createdTask = await _taskService.CreateTaskAsync(task, userId);
+
+                return Ok(new
+                {
+                    data = createdTask,
+                    status = true,
+                    code = 200,
+                    message = "Task created successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, new
+                {
+                    data = (object?)null,
+                    status = false,
+                    code = 500,
+                    message = "An error occurred while creating task."
+                });
+            }
         }
 
         [HttpPut("{id}")]
