@@ -36,7 +36,6 @@ namespace TaskManagement_BE.Repositories
                 query = query.Where(t => t.UserId == userId);
             }
 
-            Console.WriteLine($"searchTitle: {searchTitle}");
             // Handle search by Title  
             if (!string.IsNullOrEmpty(searchTitle))
             {

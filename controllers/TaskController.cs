@@ -143,17 +143,29 @@ namespace TaskManagement_BE.controllers
             }
         }
 
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTask(int id)
+        public async Task<IActionResult> DeleteTask(int id, [FromQuery] string userId, [FromQuery] string role)
         {
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            try
+            {
+                // var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(role))
+                    return BadRequest(new { code = 400, status = false, message = "User ID or Role is missing." });
 
-            var result = await _taskService.DeleteTaskAsync(id, userId, role);
-            if (!result)
-                return NotFound("Task not found.");
+                var result = await _taskService.DeleteTaskAsync(id, userId, role);
 
-            return Ok("Task deleted successfully.");
+                if (!result)
+                    return NotFound(new { code = 404, status = false, message = "Task not found or not authorized to delete." });
+
+                return Ok(new { code = 200, status = true, message = "Task deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, new { code = 500, status = false, message = "An error occurred while deleting the task." });
+            }
         }
     }
 }
