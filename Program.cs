@@ -29,6 +29,12 @@ ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+}
+
 // Middleware Configuration
 app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");
@@ -36,8 +42,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Enable Swagger for Development
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
@@ -46,6 +51,7 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
 
 // Seed Data
 await SeedDatabase(app);

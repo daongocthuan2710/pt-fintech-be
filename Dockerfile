@@ -1,21 +1,15 @@
-# Use official .NET SDK 8.0 image for build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy everything and restore dependencies
-COPY . .
+COPY *.csproj ./
 RUN dotnet restore
 
-# Build the application
-RUN dotnet publish -c Release -o /app/publish
+COPY . . 
 
-# Use runtime image for better performance
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+RUN dotnet publish -c Release -o /out
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=build /app/publish .
-
-# Expose the application port (5000)
-EXPOSE 5000
-
-# Run the application
-ENTRYPOINT ["dotnet", "TaskManagement_BE.dll"]
+COPY --from=build-env /out .
+ENTRYPOINT ["dotnet", "Task-Management-BE.dll"]

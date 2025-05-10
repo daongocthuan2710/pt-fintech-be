@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   backend:
     build:
@@ -9,11 +7,14 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://*:5000
+      - ConnectionStrings__DefaultConnection=Host=task-management-be-postgres;Port=5432;Database=task_management_db;Username=new_test_user;Password=new_test_password
     depends_on:
       - postgres
     restart: always
+    networks:
+      - task-management-network
 
   postgres:
     image: postgres:14
@@ -27,10 +28,25 @@ services:
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - task-management-network
 
-volumes:
-  postgres_data:
+  frontend:
+    image: daothuan2710/task-management-fe:v3
+    container_name: task-management-fe
+    environment:
+      NEXTAUTH_SECRET: vfy5CdtSFMFqELUvIGMY0oaYmUIY4prixBeRdZ8t0no
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXT_PUBLIC_API_URL: "http://task-management-be:5000/api"
+    ports:
+      - "3000:3000"
+    networks:
+      - task-management-network
+    restart: always
 
 networks:
   task-management-network:
-    external: true
+    external: false
+
+volumes:
+  postgres_data:

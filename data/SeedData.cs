@@ -23,10 +23,15 @@ namespace TaskManagement_BE.data
             _roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             _context = services.GetRequiredService<AppDbContext>();
 
+            Console.WriteLine("Applying migrations...");
             await _context.Database.MigrateAsync();
+            Console.WriteLine("Migrations applied.");
+
+            Console.WriteLine("Seeding data...");
             await SeedRolesAsync();
             await SeedAdminUserAsync();
             await SeedUsersAndTasksAsync();
+            Console.WriteLine("Data seeded successfully.");
         }
 
         private static async Task SeedRolesAsync()
